@@ -19,7 +19,14 @@
             <h2 class="service-title">{{ servicio.nombre }}</h2>
             <p class="service-description">{{ servicio.descripcion }}</p>
             <p class="text-primary fw-bold fs-3">{{ servicio.precio }}€</p>
-            <button class="btn btn-primary mt-3 btn-lg">Añadir al carrito</button>
+
+            <!-- Botón para pedir cita -->
+            <button 
+              class="btn btn-success mt-3 btn-lg"
+              @click="irAPedirCita"
+            >
+              Pedir Cita
+            </button>
           </div>
         </div>
       </div>
@@ -32,6 +39,7 @@
     <Footer />
   </div>
 </template>
+
 
 <script>
 import Header from '@/components/Header.vue';
@@ -58,8 +66,15 @@ export default {
       console.error("Error al cargar el servicio: ", error);
     }
   },
+  methods: {
+    irAPedirCita() {
+      // Redirigimos a la página de citas y pasamos el ID del servicio por query param
+      this.$router.push({ name: 'Citas', query: { service_id: this.servicio._id } });
+    }
+  }
 };
 </script>
+
 
 <style scoped>
 .service-detail-card {
