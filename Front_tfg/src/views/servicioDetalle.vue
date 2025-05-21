@@ -34,16 +34,24 @@
       <div v-else class="text-center">
         <p class="fs-4">Cargando detalles del servicio...</p>
       </div>
+
+      <!-- Modal Login/Registro -->
+      <LoginRegisterModal 
+        v-if="showModal" 
+        @close="showModal = false" 
+        @loginSuccess="handleLoginSuccess"
+      />
+
     </div>
 
     <Footer />
   </div>
 </template>
 
-
 <script>
 import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer.vue';
+import LoginRegisterModal from '@/components/LoginRegisterModal.vue';
 import { fetchServicioDetalle } from '@/services/apiServices';
 
 export default {
@@ -51,14 +59,17 @@ export default {
   components: {
     Header,
     Footer,
+    LoginRegisterModal,
   },
   data() {
     return {
       servicio: null,
+      showModal: false,
+      redirectTo: null,
     };
   },
   async mounted() {
-    const servicioId = this.$route.params.id; // Obtener el ID del servicio desde la URL
+    const servicioId = this.$route.params.id;
     try {
       const response = await fetchServicioDetalle(servicioId);
       this.servicio = response.data;
@@ -68,12 +79,26 @@ export default {
   },
   methods: {
     irAPedirCita() {
-      // Redirigimos a la página de citas y pasamos el ID del servicio por query param
-      this.$router.push({ name: 'Citas', query: { service_id: this.servicio._id } });
-    }
+      const isAuthenticated = !!localStorage.getItem('userToken');
+      if (isAuthenticated) {
+        this.$router.push({ name: 'Citas' });
+      } else {
+        // Mostrar modal y asignar redirección
+        this.redirectTo = { name: 'Citas' };
+        this.showModal = true;
+      }
+    },
+    handleLoginSuccess() {
+      this.showModal = false;
+      if (this.redirectTo) {
+        this.$router.push(this.redirectTo);
+        this.redirectTo = null;
+      }
+    },
   }
 };
 </script>
+
 
 
 <style scoped>

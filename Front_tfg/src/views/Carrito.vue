@@ -20,18 +20,51 @@
         </div>
       </div>
 
-      <div v-if="carrito.items.length > 0" class="text-center">
-        <h4>Total: {{ calcularTotal }}€</h4>
-        <button class="btn btn-danger" @click="vaciarCarrito">
-          Vaciar carrito
-        </button>
-        <button 
-          class="btn btn-success ms-2"
-          @click="finalizarCompra"
-          :disabled="!puedeFinalizarCompra"
-        >
-          Finalizar Compra
-        </button>
+      <div v-if="carrito.items.length > 0" class="mt-4">
+        <h4 class="text-center">Total: {{ calcularTotal }}€</h4>
+
+        <!-- Formulario de Dirección de Envío y Método de Pago -->
+        <form @submit.prevent="finalizarCompra" class="mt-4">
+          <div class="mb-3">
+            <label for="calle" class="form-label">Calle</label>
+            <input type="text" id="calle" v-model="direccion.calle" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label for="ciudad" class="form-label">Ciudad</label>
+            <input type="text" id="ciudad" v-model="direccion.ciudad" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label for="codigo_postal" class="form-label">Código Postal</label>
+            <input type="text" id="codigo_postal" v-model="direccion.codigo_postal" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label for="pais" class="form-label">País</label>
+            <input type="text" id="pais" v-model="direccion.pais" class="form-control" required />
+          </div>
+
+          <div class="mb-3">
+            <label for="metodo_pago" class="form-label">Método de Pago</label>
+            <select id="metodo_pago" v-model="metodo_pago" class="form-select" required>
+              <option value="tarjeta">Tarjeta</option>
+              <option value="paypal">PayPal</option>
+              <option value="transferencia">Transferencia</option>
+            </select>
+          </div>
+
+          <!-- Botones -->
+          <div class="text-center">
+            <button class="btn btn-danger" type="button" @click="vaciarCarrito">
+              Vaciar carrito
+            </button>
+            <button 
+              class="btn btn-success ms-2"
+              type="submit"
+              :disabled="!puedeFinalizarCompra"
+            >
+              Finalizar Compra
+            </button>
+          </div>
+        </form>
       </div>
     </div>
 
@@ -42,7 +75,7 @@
 <script>
 import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer.vue';
-import { fetchCarrito, clearCarrito, finalizarCompra } from '@/services/apiServices';
+import { fetchCarrito, clearCarrito, finalizarCompra as finalizarCompraAPI } from '@/services/apiServices';
 
 export default {
   name: 'Carrito',
@@ -56,6 +89,13 @@ export default {
         items: [],
         total: 0,
       },
+      direccion: {
+        calle: '',
+        ciudad: '',
+        codigo_postal: '',
+        pais: ''
+      },
+      metodo_pago: 'tarjeta'
     };
   },
   computed: {
@@ -65,7 +105,6 @@ export default {
       }, 0).toFixed(2);
     },
     puedeFinalizarCompra() {
-      // Valida si hay stock suficiente en todos los productos
       return this.carrito.items.every(item => item.cantidad <= item.product_id.stock);
     }
   },
@@ -90,14 +129,25 @@ export default {
     },
     async finalizarCompra() {
       try {
-        const response = await finalizarCompra();
+        const datos = {
+          direccion_envio: this.direccion,
+          metodo_pago: this.metodo_pago
+        };
+
+        console.log("📦 Datos que se enviarán:", datos); // 👈 AÑADE ESTO
+
+        const response = await finalizarCompraAPI(datos);
         alert("Compra finalizada con éxito!");
-        this.carrito = { items: [], total: 0 }; // Vaciar el carrito en frontend
+
+        this.carrito = { items: [], total: 0 };
+        this.direccion = { calle: '', ciudad: '', codigo_postal: '', pais: '' };
+        this.metodo_pago = 'tarjeta';
       } catch (error) {
         console.error("Error al finalizar la compra:", error);
-        alert("No se pudo finalizar la compra. Revisa el stock e inténtalo de nuevo.");
+        alert("No se pudo finalizar la compra. Revisa el formulario.");
       }
     }
+
   }
 };
 </script>

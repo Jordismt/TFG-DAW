@@ -90,15 +90,14 @@ export const fetchAvailableSlots = (service_id, fecha) => {
   });
 
 
-  export const finalizarCompra = () => {
-    return axios.post(
-      `${API_URL}/carts/finalizar-compra`, 
-      {},  // Si no necesitas enviar nada, el cuerpo puede ser vacío.
-      {
-        headers: getAuthHeader(),
-        withCredentials: true,  // Si necesitas manejar cookies
-      }
-    );
+  export const finalizarCompra = (datos) => {
+    return axios.post(`${API_URL}/carts/finalizar-compra`, datos, {
+      headers: getAuthHeader(),
+      withCredentials: true,
+    });
   };
+  
+  
+  
   
   

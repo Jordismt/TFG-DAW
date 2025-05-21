@@ -8,6 +8,7 @@ import Profile from '@/views/Profile.vue';
 import DetalleProducto from '@/views/DetalleProducto.vue';
 import Carrito from '@/views/Carrito.vue';
 import SobreNosotros from '@/views/SobreNosotros.vue';
+import Estadísticas from '@/views/Estadisticas.vue';
 
 const routes = [
   
@@ -17,6 +18,7 @@ const routes = [
   { path: '/tienda', name: 'Tienda', component: Tienda },
   { path: '/carrito', component: Carrito },
   { path: '/sobre-nosotros', component: SobreNosotros },
+  { path: '/estadisticas', component: Estadísticas },
   { path: '/citas', name: 'Citas', component: Citas },
   {
     path: '/perfil',

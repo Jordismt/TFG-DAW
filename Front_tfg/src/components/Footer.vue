@@ -7,15 +7,50 @@
         <router-link to="/tienda" class="text-white mx-2">Tienda</router-link>
         <router-link to="/servicios" class="text-white mx-2">Servicios</router-link>
         <router-link to="/citas" class="text-white mx-2">Citas</router-link>
+
+        <!-- 🔥 Botón de Estadísticas solo si es admin -->
+        <router-link v-if="isAdmin" to="/estadisticas" class="text-white mx-2 fw-bold">
+          📊 Estadísticas
+        </router-link>
       </nav>
     </div>
   </footer>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
-  name: 'Footer'
-}
+  name: 'Footer',
+  data() {
+    return {
+      isAdmin: false,
+    };
+  },
+  created() {
+    this.checkAdmin();
+  },
+  methods: {
+    async checkAdmin() {
+      const token = localStorage.getItem('userToken'); // ⚡ Verifica si hay sesión activa
+      if (!token) return; // 🔒 Si no hay token, el usuario no está autenticado
+
+      try {
+        const response = await axios.get('http://localhost:5000/api/users/profile', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data.role === 'admin') {
+          this.isAdmin = true; // ✅ Si el usuario es admin, muestra el botón
+        }
+      } catch (error) {
+        console.error('Error al verificar rol del usuario:', error);
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>

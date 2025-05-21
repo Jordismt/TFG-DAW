@@ -16,6 +16,29 @@
           <button @click="logout" class="btn btn-outline-danger btn-sm mt-3">
             Cerrar Sesión
           </button>
+
+          <!-- Pedidos del usuario -->
+          <div v-if="orders.length > 0">
+            <h2 class="mt-4 text-center">Tus Pedidos</h2>
+            <ul class="list-group mt-3">
+              <li v-for="order in orders" :key="order._id" class="list-group-item">
+                <strong>Orden ID:</strong> {{ order._id }}<br>
+                <strong>Estado:</strong> <span :class="getEstadoClase(order.estado)">{{ order.estado }}</span><br>
+                <strong>Total:</strong> {{ order.total.toFixed(2) }}€<br>
+                <strong>Fecha:</strong> {{ new Date(order.createdAt).toLocaleDateString() }}<br>
+                <strong>Productos:</strong>
+                <ul>
+                  <li v-for="item in order.productos" :key="item.product_id._id">
+                    {{ item.product_id.nombre }} - {{ item.cantidad }} unidades
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div v-else>
+            <p class="text-center mt-4">No tienes pedidos aún.</p>
+          </div>
+
         </div>
 
         <div v-else-if="loading">
@@ -46,11 +69,13 @@ export default {
   data() {
     return {
       user: null,
+      orders: [],
       loading: true,
     };
   },
   created() {
     this.loadUser();
+    this.loadOrders();
   },
   methods: {
     async loadUser() {
@@ -74,6 +99,34 @@ export default {
         this.$router.push('/');
       }
       this.loading = false;
+    },
+    async loadOrders() {
+      const token = localStorage.getItem('userToken');
+      if (token) {
+        try {
+          const response = await axios.get('http://localhost:5000/api/orders', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          this.orders = response.data;
+        } catch (error) {
+          console.error('Error al cargar pedidos:', error);
+          alert('No se pudieron cargar los pedidos.');
+        }
+      }
+    },
+    getEstadoClase(estado) {
+      switch (estado) {
+        case 'pendiente': return 'text-warning';
+        case 'pagado': return 'text-primary';
+        case 'enviado': return 'text-info';
+        case 'completado': return 'text-success';
+        case 'cancelado': return 'text-danger';
+        case 'rechazado': return 'text-danger';
+        case 'reembolsado': return 'text-secondary';
+        default: return 'text-muted';
+      }
     },
     logout() {
       localStorage.removeItem('userToken');
