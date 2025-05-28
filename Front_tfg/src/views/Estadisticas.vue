@@ -30,7 +30,7 @@ import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer.vue';
 import axios from 'axios';
 import Chart from 'chart.js/auto';
-
+const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 export default {
   name: "Estadísticas",
   components: { Header, Footer },
@@ -50,7 +50,7 @@ export default {
       if (!token) return this.$router.push("/");
 
       try {
-        const response = await axios.get("http://localhost:5000/api/stats", {
+        const response = await axios.get(`${baseUrl.replace(/\/api\/?$/, '')}/api/stats`,  {
           headers: { Authorization: `Bearer ${token}` },
         });
         this.stats = response.data;

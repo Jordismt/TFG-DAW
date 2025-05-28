@@ -83,7 +83,7 @@ export default {
       const token = localStorage.getItem('userToken');
       if (token) {
         try {
-          const response = await axios.get('http://localhost:5000/api/users/profile', {
+          const response = await axios.get(`${API_URL}/users/profile`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
