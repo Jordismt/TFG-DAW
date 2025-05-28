@@ -41,58 +41,53 @@
 <script>
 import axios from 'axios';
 
+const API_BASE_URL = "https://tfg-daw-api-tfg.onrender.com"; // 💡 URL correcta
+
 export default {
   data() {
     return {
-      isLogin: true, // Inicia con el formulario de inicio de sesión
+      isLogin: true,
       email: '',
       password: '',
-      nombre: '', // Necesario para el registro
-      role: 'user', // Rol por defecto para el registro
+      nombre: '',
+      role: 'user',
     };
   },
   methods: {
-    // Método para iniciar sesión
     async login() {
       try {
-        const response = await axios.post('http://localhost:5000/api/auth/login', {
+        const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
           email: this.email,
           password: this.password,
         });
 
         alert('Inicio de sesión exitoso');
-        
-        // ✅ Guardar el token en localStorage
         localStorage.setItem('userToken', response.data.token);
-
-        this.$emit('close'); // Cierra el modal
-        this.$emit('loginSuccess'); // Emite el evento de login exitoso
+        this.$emit('close');
+        this.$emit('loginSuccess');
 
       } catch (error) {
         alert(error.response.data.msg || 'Error al iniciar sesión');
       }
     },
 
-    // Método para registrar usuario
     async register() {
       try {
-        const response = await axios.post('http://localhost:5000/api/auth/register', {
+        const response = await axios.post(`${API_BASE_URL}/api/auth/register`, {
           nombre: this.nombre,
           email: this.email,
           password: this.password,
           role: this.role,
         });
         alert(response.data.msg || 'Cuenta creada con éxito');
-        this.isLogin = true; // Cambia al formulario de login después del registro
+        this.isLogin = true;
       } catch (error) {
         alert(error.response.data.msg || 'Error al registrar');
       }
     },
 
-    // Alterna entre los formularios de login y registro
     toggleForm() {
       this.isLogin = !this.isLogin;
-      // Limpiar campos al cambiar de formulario
       this.email = '';
       this.password = '';
       this.nombre = '';
@@ -101,6 +96,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 /* Estilos para el modal y el formulario */
