@@ -63,6 +63,27 @@ export default {
       console.error("Error al cargar los servicios: ", error);
     }
   },
+    methods: {
+      getImageUrl(path) {
+        if (!path) return '';
+
+        if (path.includes('localhost')) {
+          const urlObj = new URL(path);
+          const imagePath = urlObj.pathname;
+          const baseUrl = 'https://tfg-daw-api-tfg.onrender.com';
+          return `${baseUrl}${imagePath}`;
+        }
+
+        if (/^https?:\/\//.test(path)) {
+          return path;
+        }
+
+        let imagePath = path.startsWith('/uploads') ? path : `/uploads/${path.startsWith('/') ? path.slice(1) : path}`;
+        const baseUrl = 'https://tfg-daw-api-tfg.onrender.com';
+
+        return `${baseUrl}${imagePath}`;
+      },
+    }
 
 };
 </script>

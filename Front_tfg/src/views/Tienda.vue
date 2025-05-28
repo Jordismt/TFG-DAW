@@ -14,7 +14,7 @@
           <div class="card h-100 shadow-sm">
             <img 
               crossorigin="anonymous"
-              :src="producto.imagen" 
+              :src="getImageUrl(producto.imagen)" 
               class="card-img-top" 
               alt="Imagen del producto"
               @error="producto.imagen = 'https://via.placeholder.com/300'"
@@ -66,6 +66,25 @@ export default {
     }
   },
   methods: {
+      getImageUrl(path) {
+        if (!path) return '';
+
+        if (path.includes('localhost')) {
+          const urlObj = new URL(path);
+          const imagePath = urlObj.pathname;
+          const baseUrl = 'https://tfg-daw-api-tfg.onrender.com';
+          return `${baseUrl}${imagePath}`;
+        }
+
+        if (/^https?:\/\//.test(path)) {
+          return path;
+        }
+
+        let imagePath = path.startsWith('/uploads') ? path : `/uploads/${path.startsWith('/') ? path.slice(1) : path}`;
+        const baseUrl = 'https://tfg-daw-api-tfg.onrender.com';
+
+        return `${baseUrl}${imagePath}`;
+      },
     async añadirAlCarrito(producto) {
       try {
         await addToCarrito(producto._id, 1); // Aquí le pasamos la cantidad

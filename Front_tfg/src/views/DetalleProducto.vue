@@ -7,7 +7,7 @@
         <div class="col-md-6">
           <img 
             crossorigin="anonymous"
-            :src="producto.imagen" 
+            :src="getImageUrl(producto.imagen)" 
             class="img-fluid" 
             alt="Imagen del producto"
           />
@@ -68,6 +68,25 @@ export default {
     }
   },
   methods: {
+          getImageUrl(path) {
+        if (!path) return '';
+
+        if (path.includes('localhost')) {
+          const urlObj = new URL(path);
+          const imagePath = urlObj.pathname;
+          const baseUrl = 'https://tfg-daw-api-tfg.onrender.com';
+          return `${baseUrl}${imagePath}`;
+        }
+
+        if (/^https?:\/\//.test(path)) {
+          return path;
+        }
+
+        let imagePath = path.startsWith('/uploads') ? path : `/uploads/${path.startsWith('/') ? path.slice(1) : path}`;
+        const baseUrl = 'https://tfg-daw-api-tfg.onrender.com';
+
+        return `${baseUrl}${imagePath}`;
+      },
     async añadirAlCarrito(producto) {
       if (this.cantidad > 0 && this.cantidad <= producto.stock) {
         try {
