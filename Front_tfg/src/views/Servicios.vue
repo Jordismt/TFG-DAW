@@ -11,7 +11,7 @@
             <!-- Imagen del servicio con URL completa -->
             <img 
               crossorigin="anonymous"
-              :src="servicio.imagen" 
+              :src="getImageUrl(servicio.imagen)" 
               class="card-img-top" 
               alt="Imagen del servicio"
               @error="servicio.imagen = 'https://via.placeholder.com/300'"
