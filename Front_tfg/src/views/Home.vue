@@ -165,18 +165,30 @@ export default {
     };
   },
   methods: {
-    getImageUrl(path) {
-      if (!path) return '';
+getImageUrl(path) {
+  if (!path) return '';
 
-      if (/^https?:\/\//.test(path)) {
-        return path;
-      }
+  // Si la URL contiene 'localhost', reemplázala por tu backend
+  if (path.includes('localhost')) {
+    // Extraemos el path de la URL de localhost y lo concatenamos con baseUrl
+    const urlObj = new URL(path);
+    const imagePath = urlObj.pathname; // ejemplo: /uploads/imagen.jpg
+    const baseUrl = 'https://tfg-daw-api-tfg.onrender.com';
+    return `${baseUrl}${imagePath}`;
+  }
 
-      let imagePath = path.startsWith('/uploads') ? path : `/uploads/${path.startsWith('/') ? path.slice(1) : path}`;
-      const baseUrl = 'https://tfg-daw-api-tfg.onrender.com'; // parche temporal
+  // Si la ruta ya es URL pública válida (sin localhost), la dejamos igual
+  if (/^https?:\/\//.test(path)) {
+    return path;
+  }
 
-      return `${baseUrl}${imagePath}`;
-    }
+  // Si es ruta relativa, la concatenamos con baseUrl
+  let imagePath = path.startsWith('/uploads') ? path : `/uploads/${path.startsWith('/') ? path.slice(1) : path}`;
+  const baseUrl = 'https://tfg-daw-api-tfg.onrender.com';
+
+  return `${baseUrl}${imagePath}`;
+}
+
 
 
 
