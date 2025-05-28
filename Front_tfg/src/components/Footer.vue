@@ -19,7 +19,7 @@
 
 <script>
 import axios from 'axios';
-
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 export default {
   name: 'Footer',
   data() {
@@ -36,7 +36,7 @@ export default {
       if (!token) return; // 🔒 Si no hay token, el usuario no está autenticado
 
       try {
-        const response = await axios.get('http://localhost:5000/api/users/profile', {
+        const response = await axios.get(`${API_URL}/users/profile`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
