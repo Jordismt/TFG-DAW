@@ -17,7 +17,12 @@
             :class="{'active': index === 0}"
           >
             <div class="card h-100 shadow-lg rounded-3" style="background-color: #01126C; color: white;">
-              <img crossorigin="anonymous" :src="servicio.imagen" class="d-block w-100" alt="servicio.nombre">
+              <img
+                crossorigin="anonymous"
+                :src="getImageUrl(servicio.imagen)"
+                class="d-block w-100"
+                :alt="servicio.nombre"
+              >
               <div class="card-body d-flex flex-column justify-content-between">
                 <h5 class="card-title">{{ servicio.nombre }}</h5>
                 <p class="card-text">{{ servicio.descripcion }}</p>
@@ -53,7 +58,12 @@
             :class="{'active': index === 0}"
           >
             <div class="card h-100 shadow-lg rounded-3" style="background-color: #01126C; color: white;">
-              <img crossorigin="anonymous" :src="producto.imagen" class="d-block w-100" alt="producto.nombre">
+              <img
+                crossorigin="anonymous"
+                :src="getImageUrl(producto.imagen)"
+                class="d-block w-100"
+                :alt="producto.nombre"
+              >
               <div class="card-body d-flex flex-column justify-content-between">
                 <h5 class="card-title">{{ producto.nombre }}</h5>
                 <p class="card-text">{{ producto.descripcion }}</p>
@@ -124,7 +134,6 @@
         </div>
       </div>
 
-
     </main>
 
     <!-- Footer Component -->
@@ -133,9 +142,9 @@
 </template>
 
 <script>
-import Header from '@/components/Header.vue'; // Asegúrate de que la ruta sea correcta
-import Footer from '@/components/Footer.vue'; // Asegúrate de que la ruta sea correcta
-import { fetchServicios, fetchProductos } from '@/services/apiServices'; // Asegúrate de tener estas funciones en el archivo apiServices.js
+import Header from '@/components/Header.vue';
+import Footer from '@/components/Footer.vue';
+import { fetchServicios, fetchProductos } from '@/services/apiServices';
 
 export default {
   name: 'Home',
@@ -146,7 +155,7 @@ export default {
   data() {
     return {
       servicios: [],
-      productos: [], // Inicializamos el array de productos
+      productos: [],
       marcas: [
         { imagen: 'marca1.jpg' },
         { imagen: 'marca2.jpg' },
@@ -155,13 +164,29 @@ export default {
       ]
     };
   },
+  methods: {
+    getImageUrl(path) {
+      if (!path) return '';
+
+      // Obtiene la URL base desde env, quitando '/api' si existe
+      const baseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/api\/?$/, '') || 'http://localhost:5000';
+
+      // Si la ruta ya es URL absoluta, devuélvela tal cual
+      if (/^https?:\/\//.test(path)) {
+        return path;
+      }
+
+      // Concatenar baseUrl y path (asegurando / entre ellos)
+      return `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
+    }
+  },
   async mounted() {
     try {
-      const responseServicios = await fetchServicios(); // Carga los servicios desde el backend
-      this.servicios = responseServicios.data;  // Almacena los servicios en la data
+      const responseServicios = await fetchServicios();
+      this.servicios = responseServicios.data;
 
-      const responseProductos = await fetchProductos(); // Carga los productos desde el backend
-      this.productos = responseProductos.data;  // Almacena los productos en la data
+      const responseProductos = await fetchProductos();
+      this.productos = responseProductos.data;
     } catch (error) {
       console.error("Error al cargar los datos: ", error);
     }
@@ -176,7 +201,7 @@ export default {
 }
 
 .carousel-inner .carousel-item img {
-  height: 350px; /* Ajustar el tamaño de las imágenes del carrusel */
+  height: 350px;
   object-fit: cover;
 }
 
@@ -201,6 +226,7 @@ button:hover {
   background-color: #86D6FF;
   transform: scale(1.05);
 }
+
 .sobre-nosotros-card {
   background-color: #01126C;
   color: white;
@@ -224,17 +250,18 @@ button:hover {
   background-color: #86D6FF;
   color: #01126C;
 }
+
 .marcas-carousel {
   overflow: hidden;
   white-space: nowrap;
   margin-bottom: 30px;
-  width: 100%; /* Asegura el ancho completo */
+  width: 100%;
 }
 
 .marcas-track {
   display: inline-flex;
   animation: scroll 10s linear infinite;
-  width: max-content; /* Asegura que se ajuste al contenido */
+  width: max-content;
 }
 
 .marcas-track img {
@@ -249,8 +276,7 @@ button:hover {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-50%); /* Ajusta para que el bucle sea continuo */
+    transform: translateX(-50%);
   }
 }
-
 </style>
