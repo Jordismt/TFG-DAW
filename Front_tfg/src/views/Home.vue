@@ -168,18 +168,16 @@ export default {
     getImageUrl(path) {
       if (!path) return '';
 
-      const baseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/api\/?$/, '') || 'http://localhost:5000';
-
-      // Si path no empieza con /uploads, añadirlo
-      let imagePath = path.startsWith('/uploads') ? path : `/uploads/${path.startsWith('/') ? path.slice(1) : path}`;
-
-      // Si path es URL absoluta, devolverla
       if (/^https?:\/\//.test(path)) {
         return path;
       }
 
+      let imagePath = path.startsWith('/uploads') ? path : `/uploads/${path.startsWith('/') ? path.slice(1) : path}`;
+      const baseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/api\/?$/, '') || 'http://localhost:5000';
+
       return `${baseUrl}${imagePath}`;
     }
+
 
   },
   async mounted() {
