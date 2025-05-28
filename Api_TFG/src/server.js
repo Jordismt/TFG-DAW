@@ -60,8 +60,7 @@ app.use("/api/services", serviceRoutes);
 const statsRoutes = require("./routes/statsRoutes");
 app.use("/api/stats", statsRoutes);
 
-// 🌐 Servir archivos estáticos (uploads)
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
 // 🚀 Middleware para CORS en imágenes
 app.use("/uploads", (req, res, next) => {
@@ -73,6 +72,8 @@ app.use("/uploads", (req, res, next) => {
   next();
 });
 
+// 🌐 Servir archivos estáticos (uploads)
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ================================
 // ❌ Manejo de errores globales
