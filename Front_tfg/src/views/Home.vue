@@ -173,10 +173,11 @@ export default {
       }
 
       let imagePath = path.startsWith('/uploads') ? path : `/uploads/${path.startsWith('/') ? path.slice(1) : path}`;
-      const baseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/api\/?$/, '') || 'http://localhost:5000';
+      const baseUrl = 'https://tfg-daw-api-tfg.onrender.com'; // parche temporal
 
       return `${baseUrl}${imagePath}`;
     }
+
 
 
   },
