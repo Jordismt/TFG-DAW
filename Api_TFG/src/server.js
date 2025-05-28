@@ -65,7 +65,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // 🚀 Middleware para CORS en imágenes
 app.use("/uploads", (req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
