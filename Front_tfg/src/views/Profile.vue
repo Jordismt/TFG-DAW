@@ -59,6 +59,7 @@
 import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer.vue';
 import axios from 'axios';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export default {
   name: 'Profile',
@@ -100,7 +101,7 @@ export default {
       }
       this.loading = false;
     },
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    
 
     async loadOrders() {
       const token = localStorage.getItem('userToken');
