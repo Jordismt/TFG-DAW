@@ -2,7 +2,8 @@
 import axios from "axios";
 
 // Configuración base de Axios
-const API_URL = "http://localhost:5000/api"; // Cambia esto si usas otro puerto
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
 
 
 const getAuthHeader = () => {

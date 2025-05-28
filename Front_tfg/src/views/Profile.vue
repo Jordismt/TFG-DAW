@@ -100,11 +100,13 @@ export default {
       }
       this.loading = false;
     },
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
     async loadOrders() {
       const token = localStorage.getItem('userToken');
       if (token) {
         try {
-          const response = await axios.get('http://localhost:5000/api/orders', {
+          const response = await axios.get(`${API_URL}/orders`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -116,6 +118,7 @@ export default {
         }
       }
     },
+
     getEstadoClase(estado) {
       switch (estado) {
         case 'pendiente': return 'text-warning';
