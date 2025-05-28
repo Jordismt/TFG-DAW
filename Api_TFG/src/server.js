@@ -23,11 +23,12 @@ connectDB();
 // 🔓 CORS Configuración
 // ================================
 const corsOptions = {
-  origin: "http://localhost:5173", // Permitir solicitudes solo desde tu frontend
+  origin: ["http://localhost:5173", "https://tfg-daw-rfrw.vercel.app"], // Permite ambos orígenes
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, // Esto es importante si utilizas cookies o autenticación basada en credenciales
+  credentials: true,
 };
+
 
 app.use(cors(corsOptions));
 
