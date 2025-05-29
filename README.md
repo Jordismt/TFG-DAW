@@ -1,13 +1,85 @@
-PROYECTO DE FIN DE CURSO DEL CFGS DAW (DESARROLLO DE APLICACIONES WEB)
+# Proyecto Final CFGS DAW - Web para Peluquería
 
-- ESTE PROYECTO CONSTA DE REALIZAR UNA WEB PARA UNA PELUQUERIA CON FUNCIONALIDADES COMO:
-  · REGISTRAR / LOGUEAR USUARIOS
-  · VER LOS SERVICIOS Y PRODUCTOS DISPONIBLES
-  · CREAR CITAS PARA LOS SERVICIOS
-  · AÑADIR PRODUCTOS AL CARRITO Y CREAR LOS PEDIDOS
-  · VER PERFIL Y HISTORIAL DE PEDIDOS
-  · VER PANEL DE ESTADÍSTICAS (SOLO LOS ADMINS)
+Este es el proyecto final del ciclo de Desarrollo de Aplicaciones Web (DAW). Consiste en el desarrollo de una aplicación web para una peluquería, con múltiples funcionalidades tanto para usuarios como para administradores.
 
-- EL PROYECTO ESTA DESPLEGADO Y ESTA ACCESIBLE DESDE ESTA URL [https://tfg-daw-rfrw.vercel.app/]
+🌐 **URL del proyecto desplegado:** [https://tfg-daw-rfrw.vercel.app/](https://tfg-daw-rfrw.vercel.app/)
 
-- SI QUIERES INICIARLO EN LOCAL, BASTA CON CLONAR EL REPOSITORIO, ABRIR LA CARPETA EN VSCODE O CUALQUIER OTRO EDITOR DE TEXTO, INSTALAR LAS DEPENDENCIAS NECESARIAS E IR A LA CARPETA Api_TFG y hacer 'npm run dev' y de la misma forma en la carpeta Front_tfg
+---
+
+## ✨ Funcionalidades principales
+
+- **Autenticación de usuarios:**
+  - Registro y login de clientes.
+  - Roles diferenciados para administradores y clientes.
+
+- **Servicios y productos:**
+  - Visualización de los servicios y productos disponibles.
+
+- **Gestión de citas:**
+  - Crear citas para los diferentes servicios.
+
+- **Carrito y pedidos:**
+  - Añadir productos al carrito.
+  - Crear y visualizar pedidos.
+
+- **Perfil de usuario:**
+  - Visualizar información personal.
+  - Historial de pedidos y citas.
+
+- **Panel de estadísticas:**
+  - Exclusivo para administradores.
+
+---
+
+## 🚀 Instalación y ejecución local
+
+Si deseas ejecutar este proyecto en tu entorno local, sigue estos pasos:
+
+### 1️⃣ Clonar el repositorio
+
+```bash
+git clone <URL-del-repositorio>
+# Para la API
+cd Api_TFG
+npm install
+
+# Para el Frontend
+cd ../Front_tfg
+npm install
+
+---
+
+### Parte 3: Ejecución de servidores + Tecnologías + Estructura + Info adicional
+
+```markdown
+### 3️⃣ Ejecutar los servidores de desarrollo
+
+En dos terminales separados, inicia los entornos de desarrollo:
+
+```bash
+# API
+cd Api_TFG
+npm run dev
+
+# Frontend
+cd ../Front_tfg
+npm run dev
+```
+🛠️ Tecnologías utilizadas
+Frontend: React.js, Tailwind CSS
+
+Backend: Node.js, Express.js
+
+Base de datos: MongoDB
+
+Autenticación: JWT
+
+Despliegue: Vercel (Frontend) Render(Backend) Mongo Atlas(BD Mongo)
+
+📁 Estructura del repositorio
+plaintext
+Copiar
+Editar
+Api_TFG/        # Backend: API REST
+Front_tfg/      # Frontend: aplicación React
+README.md       # Documentación del proyecto
