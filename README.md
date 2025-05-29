@@ -66,7 +66,7 @@ cd ../Front_tfg
 npm run dev
 ```
 🛠️ Tecnologías utilizadas
-Frontend: React.js, Tailwind CSS
+Frontend: Vue.js, Bootstrap, CSS, ChartJS
 
 Backend: Node.js, Express.js
 
