@@ -75,7 +75,7 @@
         <ul class="list-group">
           <li class="list-group-item d-flex justify-content-between align-items-center" v-for="cita in citas" :key="cita._id">
             <div>
-              <strong>{{ cita.service_id.nombre }}</strong> - {{ new Date(cita.fecha).toLocaleString() }}
+              <strong>{{ cita.service_id.nombre }}</strong> - {{ new Date(cita.fecha).toLocaleString('es-ES', { timeZone: 'Europe/Madrid' }) }}
             </div>
             <button class="btn btn-danger btn-sm" @click="cancelarCita(cita._id)">Cancelar</button>
           </li>

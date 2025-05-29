@@ -51,7 +51,7 @@ npm install
 
 ### Parte 3: Ejecución de servidores + Tecnologías + Estructura + Info adicional
 
-```markdown
+
 ### 3️⃣ Ejecutar los servidores de desarrollo
 
 En dos terminales separados, inicia los entornos de desarrollo:
@@ -77,9 +77,7 @@ Autenticación: JWT
 Despliegue: Vercel (Frontend) Render(Backend) Mongo Atlas(BD Mongo)
 
 📁 Estructura del repositorio
-plaintext
-Copiar
-Editar
+
 Api_TFG/        # Backend: API REST
 Front_tfg/      # Frontend: aplicación React
 README.md       # Documentación del proyecto
