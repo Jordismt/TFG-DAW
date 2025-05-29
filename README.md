@@ -79,5 +79,5 @@ Despliegue: Vercel (Frontend) Render(Backend) Mongo Atlas(BD Mongo)
 📁 Estructura del repositorio
 
 Api_TFG/        # Backend: API REST
-Front_tfg/      # Frontend: aplicación React
+Front_tfg/      # Frontend: aplicación Vue
 README.md       # Documentación del proyecto
