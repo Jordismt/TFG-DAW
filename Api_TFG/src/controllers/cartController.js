@@ -102,7 +102,7 @@ exports.finalizarCompra = async (req, res) => {
 exports.finalizarCompra = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { direccion_envio, metodo_pago } = req.body;
+    const { direccion_envio, metodo_pago, productos } = req.body;
 
     if (
       !direccion_envio ||
@@ -114,28 +114,40 @@ exports.finalizarCompra = async (req, res) => {
     ) {
       return res.status(400).json({ msg: "Faltan datos completos de envío o método de pago." });
     }
-    
 
+    if (!productos || productos.length === 0) {
+      return res.status(400).json({ msg: "No se especificaron productos para la compra." });
+    }
+
+    // Obtener carrito completo para poder actualizarlo luego
     const cart = await Cart.findOne({ user_id: userId }).populate("items.product_id");
-
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({ msg: "El carrito está vacío." });
     }
 
-    // Validación de stock
-    for (const item of cart.items) {
-      if (item.cantidad > item.product_id.stock) {
-        return res.status(400).json({ msg: `Stock insuficiente para el producto ${item.product_id.nombre}` });
+    // Validar que los productos enviados estén en el carrito y validar stock
+    for (const prod of productos) {
+      const itemEnCarrito = cart.items.find(item => item.product_id._id.toString() === prod.product_id);
+      if (!itemEnCarrito) {
+        return res.status(400).json({ msg: `El producto ${prod.product_id} no está en el carrito.` });
+      }
+      if (prod.cantidad > itemEnCarrito.product_id.stock) {
+        return res.status(400).json({ msg: `Stock insuficiente para el producto ${itemEnCarrito.product_id.nombre}` });
       }
     }
 
-    const total = cart.items.reduce((sum, item) => sum + item.product_id.precio * item.cantidad, 0);
+    // Calcular total solo de productos seleccionados
+    const total = productos.reduce((sum, prod) => {
+      const prodCarrito = cart.items.find(item => item.product_id._id.toString() === prod.product_id);
+      return sum + prodCarrito.product_id.precio * prod.cantidad;
+    }, 0);
 
+    // Crear la orden solo con los productos seleccionados
     const newOrder = new Order({
       user_id: userId,
-      productos: cart.items.map(item => ({
-        product_id: item.product_id._id,
-        cantidad: item.cantidad
+      productos: productos.map(p => ({
+        product_id: p.product_id,
+        cantidad: p.cantidad
       })),
       total,
       direccion_envio,
@@ -145,17 +157,20 @@ exports.finalizarCompra = async (req, res) => {
 
     await newOrder.save();
 
-    // Actualiza stock
-    for (const item of cart.items) {
-      await Product.findByIdAndUpdate(item.product_id._id, {
-        $inc: { stock: -item.cantidad }
-      });
+    // Actualizar stock solo para productos comprados
+    for (const prod of productos) {
+      await Product.findByIdAndUpdate(prod.product_id, { $inc: { stock: -prod.cantidad } });
     }
 
-    cart.items = [];
+    // Eliminar del carrito solo los productos comprados
+    cart.items = cart.items.filter(item => !productos.some(p => p.product_id === item.product_id._id.toString()));
+
+    // Recalcular total del carrito restante
+    cart.total = cart.items.reduce((sum, item) => sum + item.product_id.precio * item.cantidad, 0);
+
     await cart.save();
 
-    res.status(201).json({ msg: "Orden creada con éxito", order: newOrder });
+    res.status(201).json({ msg: "Orden creada con éxito", order: newOrder, carrito: cart });
   } catch (error) {
     console.error("Error al finalizar la compra:", error);
     res.status(500).json({ msg: "Error al finalizar la compra", error });
