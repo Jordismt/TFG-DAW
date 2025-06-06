@@ -8,6 +8,7 @@ const {
   getUserAppointments,
   getAvailableSlots,
   cancelAppointment,
+  updateAppointment,
 } = require("../controllers/appointmentController");
 
 
@@ -18,5 +19,6 @@ router.get("/admin", verificarToken, esAdmin, getAllAppointments); // Obtener to
 router.delete("/:id", verificarToken, cancelAppointment); // Cancelar cita
 router.get("/export", verificarToken, esAdmin, exportAppointmentsToCSV);
 router.get("/disponibilidad/:service_id/:fecha", verificarToken, getAvailableSlots);
+router.put("/:id", verificarToken, updateAppointment);
 
 module.exports = router;

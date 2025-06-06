@@ -100,5 +100,10 @@ export const fetchAvailableSlots = (service_id, fecha) => {
   
   
   
-  
+  export const updateAppointment = (id, data) => {
+    return axios.put(`${API_URL}/appointments/${id}`, data, {
+      headers: getAuthHeader(),
+      withCredentials: true,
+    });
+  };
   

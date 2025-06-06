@@ -150,3 +150,55 @@ exports.getAvailableSlots = async (req, res) => {
     res.status(500).json({ msg: "Error en el servidor", error });
   }
 };
+
+/**
+ * Editar una cita (solo usuario propietario o admin)
+ */
+exports.updateAppointment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { service_id, fecha } = req.body;
+
+    if (!service_id || !fecha) {
+      return res.status(400).json({ msg: "Todos los campos son obligatorios" });
+    }
+
+    const cita = await Appointment.findById(id);
+
+    if (!cita) {
+      return res.status(404).json({ msg: "Cita no encontrada" });
+    }
+
+    // Verificar si es dueño o admin
+    if (cita.user_id.toString() !== req.user.id && req.user.role !== "admin") {
+      return res.status(403).json({ msg: "No tienes permisos para editar esta cita" });
+    }
+
+    const nuevaFecha = new Date(fecha);
+    const finNueva = new Date(nuevaFecha.getTime() + 45 * 60000);
+
+    const citaExistente = await Appointment.findOne({
+      _id: { $ne: id },
+      service_id,
+      $or: [
+        { fecha: { $gte: nuevaFecha, $lt: finNueva } },
+        { fecha: { $lt: nuevaFecha, $gte: new Date(nuevaFecha.getTime() - 45 * 60000) } }
+      ]
+    });
+
+    if (citaExistente) {
+      return res.status(400).json({ msg: "Ya hay una cita para ese horario." });
+    }
+
+    cita.service_id = service_id;
+    cita.fecha = nuevaFecha;
+
+    await cita.save();
+
+    res.json({ msg: "Cita actualizada correctamente", cita });
+
+  } catch (error) {
+    console.error("Error al actualizar cita:", error);
+    res.status(500).json({ msg: "Error en el servidor", error });
+  }
+};
