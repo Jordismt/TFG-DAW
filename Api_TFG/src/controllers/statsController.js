@@ -63,7 +63,7 @@ exports.buscarUsuarioConCitas = async (req, res) => {
     // Traer las citas de esos usuarios
     const resultados = await Promise.all(
       usuarios.map(async (usuario) => {
-        const citas = await Appointment.find({ user_id: usuario._id })
+        const citas = await Appointment.find({ usuario_id: usuario._id })
           .populate("service_id", "nombre precio")
           .sort({ fecha: 1 });
 
