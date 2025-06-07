@@ -59,11 +59,19 @@
                   <li
                     v-for="cita in usuario.citas"
                     :key="cita._id"
-                    class="list-group-item"
+                    class="list-group-item d-flex justify-content-between align-items-center"
                   >
-                    <strong>{{ new Date(cita.fecha).toLocaleString() }}</strong> - 
-                    {{ cita.service_id?.nombre || "Servicio eliminado" }} 
-                    <span v-if="cita.service_id">({{ cita.service_id.precio }}€)</span>
+                    <div>
+                      <strong>{{ new Date(cita.fecha).toLocaleString() }}</strong> - 
+                      {{ cita.service_id?.nombre || "Servicio eliminado" }} 
+                      <span v-if="cita.service_id">({{ cita.service_id.precio }}€)</span>
+                    </div>
+                    <button
+                      class="btn btn-warning btn-sm"
+                      @click="abrirEdicion(cita)"
+                    >
+                      Editar
+                    </button>
                   </li>
                 </ul>
               </div>
@@ -72,6 +80,45 @@
 
           <div v-else-if="busquedaRealizada" class="alert alert-info">
             No se encontraron usuarios con ese nombre.
+          </div>
+
+          <!-- Modal/Sección de edición -->
+          <div v-if="citaAEditar" class="card mt-4 p-4 shadow">
+            <h5 class="card-title mb-3">Editar Cita</h5>
+            <form @submit.prevent="guardarEdicion">
+              <div class="mb-3">
+                <label class="form-label">Servicio:</label>
+                <select v-model="editForm.service_id" class="form-select" @change="cargarHorariosEdicion" required>
+                  <option value="" disabled>Selecciona un servicio</option>
+                  <option v-for="servicio in servicios" :key="servicio._id" :value="servicio._id">
+                    {{ servicio.nombre }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Fecha:</label>
+                <input v-model="editForm.fecha" type="date" class="form-control" @change="cargarHorariosEdicion" required />
+              </div>
+
+              <div class="mb-3" v-if="horariosEdicion.length > 0">
+                <label class="form-label">Hora:</label>
+                <div class="d-flex flex-wrap gap-2">
+                  <button
+                    v-for="hora in horariosEdicion"
+                    :key="hora"
+                    class="btn"
+                    :class="{'btn-outline-primary': editForm.hora !== hora, 'btn-primary': editForm.hora === hora}"
+                    @click.prevent="seleccionarHoraEdicion(hora)"
+                  >
+                    {{ hora }}
+                  </button>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-success">Guardar Cambios</button>
+              <button type="button" class="btn btn-secondary ms-2" @click="cerrarEdicion">Cancelar</button>
+            </form>
           </div>
         </div>
       </div>
@@ -86,7 +133,12 @@ import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer.vue';
 import axios from 'axios';
 import Chart from 'chart.js/auto';
-import { buscarUsuariosConCitas } from '@/services/apiServices';
+import {
+  buscarUsuariosConCitas,
+  fetchServices,
+  fetchAvailableSlots,
+  updateAppointment,
+} from '@/services/apiServices';
 
 const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -100,6 +152,16 @@ export default {
       nombreBusqueda: '',
       usuariosCitas: [],
       busquedaRealizada: false,
+
+      // Para edición
+      servicios: [],
+      citaAEditar: null,
+      editForm: {
+        service_id: '',
+        fecha: '',
+        hora: '',
+      },
+      horariosEdicion: [],
     };
   },
   computed: {
@@ -114,6 +176,7 @@ export default {
   },
   async mounted() {
     await this.fetchStats();
+    await this.cargarServicios();
     this.renderChart();
   },
   methods: {
@@ -167,27 +230,101 @@ export default {
         this.busquedaRealizada = true;
       }
     },
+
+    // Cargar servicios para el select de edición
+    async cargarServicios() {
+      try {
+        const response = await fetchServices();
+        this.servicios = response.data;
+      } catch (error) {
+        console.error('Error al cargar servicios:', error);
+      }
+    },
+
+    abrirEdicion(cita) {
+      this.citaAEditar = cita;
+      this.editForm.service_id = cita.service_id?._id || '';
+      this.editForm.fecha = new Date(cita.fecha).toISOString().slice(0, 10);
+      this.editForm.hora = new Date(cita.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      this.cargarHorariosEdicion();
+    },
+    cerrarEdicion() {
+      this.citaAEditar = null;
+      this.editForm = { service_id: '', fecha: '', hora: '' };
+      this.horariosEdicion = [];
+    },
+    async cargarHorariosEdicion() {
+      if (this.editForm.service_id && this.editForm.fecha) {
+        try {
+          const response = await fetchAvailableSlots(this.editForm.service_id, this.editForm.fecha);
+          this.horariosEdicion = response.data.map((slot) => {
+            const date = new Date(slot);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          });
+
+          // Permitir seleccionar también la hora actual de la cita aunque esté ocupada
+          if (this.citaAEditar) {
+            const horaActual = new Date(this.citaAEditar.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            if (!this.horariosEdicion.includes(horaActual)) {
+              this.horariosEdicion.push(horaActual);
+              this.horariosEdicion.sort();
+            }
+          }
+        } catch (error) {
+          console.error('Error al cargar horarios de edición:', error);
+          this.horariosEdicion = [];
+        }
+      } else {
+        this.horariosEdicion = [];
+      }
+    },
+    seleccionarHoraEdicion(hora) {
+      this.editForm.hora = hora;
+    },
+    async guardarEdicion() {
+      if (!this.editForm.hora) {
+        alert('Selecciona una hora para la cita.');
+        return;
+      }
+      try {
+        const fechaHora = `${this.editForm.fecha}T${this.editForm.hora}:00`;
+        await updateAppointment(this.citaAEditar._id, {
+          service_id: this.editForm.service_id,
+          fecha: fechaHora,
+        });
+
+        alert('Cita actualizada correctamente');
+        this.cerrarEdicion();
+
+        // Actualizar la lista para reflejar cambios
+        await this.buscarUsuarios();
+      } catch (error) {
+        console.error('Error al guardar los cambios:', error);
+        alert(error.response?.data?.msg || 'Error al actualizar la cita');
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
-.stats-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin: 30px 0;
-}
-
-.stat-card {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  font-size: 1.2rem;
-}
 .card {
   border-radius: 10px;
+}
+.btn-outline-primary {
+  border-color: #007bff;
+  color: #007bff;
+}
+.btn-outline-primary:hover {
+  background-color: #007bff;
+  color: white;
+}
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+.active {
+  background-color: #007bff !important;
+  color: white !important;
 }
 </style>
