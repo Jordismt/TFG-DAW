@@ -86,7 +86,7 @@ import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer.vue';
 import axios from 'axios';
 import Chart from 'chart.js/auto';
-import { buscarUsuariosConCitas } from '@/services/apiService';
+import { buscarUsuariosConCitas } from '@/services/apiServices';
 
 const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
