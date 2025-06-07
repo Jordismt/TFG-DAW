@@ -66,12 +66,20 @@
                       {{ cita.service_id?.nombre || "Servicio eliminado" }} 
                       <span v-if="cita.service_id">({{ cita.service_id.precio }}€)</span>
                     </div>
-                    <button
-                      class="btn btn-warning btn-sm"
-                      @click="abrirEdicion(cita)"
-                    >
-                      Editar
-                    </button>
+                    <div class="btn-group">
+                      <button
+                        class="btn btn-warning btn-sm"
+                        @click="abrirEdicion(cita)"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        class="btn btn-danger btn-sm"
+                        @click="cancelarCita(cita._id)"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
                   </li>
                 </ul>
               </div>
@@ -138,6 +146,7 @@ import {
   fetchServices,
   fetchAvailableSlots,
   updateAppointment,
+  cancelAppointment, // <-- Importa la función cancelar
 } from '@/services/apiServices';
 
 const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -261,46 +270,47 @@ export default {
             const date = new Date(slot);
             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
           });
-
-          // Permitir seleccionar también la hora actual de la cita aunque esté ocupada
-          if (this.citaAEditar) {
-            const horaActual = new Date(this.citaAEditar.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            if (!this.horariosEdicion.includes(horaActual)) {
-              this.horariosEdicion.push(horaActual);
-              this.horariosEdicion.sort();
-            }
-          }
         } catch (error) {
-          console.error('Error al cargar horarios de edición:', error);
           this.horariosEdicion = [];
+          console.error('Error al cargar horarios disponibles:', error);
         }
-      } else {
-        this.horariosEdicion = [];
       }
     },
     seleccionarHoraEdicion(hora) {
       this.editForm.hora = hora;
     },
     async guardarEdicion() {
-      if (!this.editForm.hora) {
-        alert('Selecciona una hora para la cita.');
+      if (!this.editForm.service_id || !this.editForm.fecha || !this.editForm.hora) {
+        alert('Por favor, completa todos los campos.');
         return;
       }
+
+      const fechaHora = new Date(`${this.editForm.fecha}T${this.editForm.hora}:00`);
+
       try {
-        const fechaHora = `${this.editForm.fecha}T${this.editForm.hora}:00`;
         await updateAppointment(this.citaAEditar._id, {
           service_id: this.editForm.service_id,
-          fecha: fechaHora,
+          fecha: fechaHora.toISOString(),
         });
-
-        alert('Cita actualizada correctamente');
+        alert('Cita actualizada correctamente.');
         this.cerrarEdicion();
-
-        // Actualizar la lista para reflejar cambios
-        await this.buscarUsuarios();
+        this.buscarUsuarios();
       } catch (error) {
-        console.error('Error al guardar los cambios:', error);
-        alert(error.response?.data?.msg || 'Error al actualizar la cita');
+        console.error('Error al guardar edición:', error);
+        alert('No se pudo actualizar la cita.');
+      }
+    },
+
+    async cancelarCita(idCita) {
+      if (!confirm('¿Seguro que quieres cancelar esta cita?')) return;
+
+      try {
+        await cancelAppointment(idCita);
+        alert('Cita cancelada correctamente.');
+        this.buscarUsuarios();
+      } catch (error) {
+        console.error('Error al cancelar cita:', error);
+        alert('No se pudo cancelar la cita.');
       }
     },
   },
@@ -310,6 +320,9 @@ export default {
 <style scoped>
 .card {
   border-radius: 10px;
+}
+.btn-group > button {
+  min-width: 75px;
 }
 .btn-outline-primary {
   border-color: #007bff;
