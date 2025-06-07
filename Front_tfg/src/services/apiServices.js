@@ -107,3 +107,10 @@ export const fetchAvailableSlots = (service_id, fecha) => {
     });
   };
   
+  export const buscarUsuariosConCitas = (nombre) => {
+    return axios.get(`${API_URL}/stats/buscar-usuario?nombre=${encodeURIComponent(nombre)}`, {
+      headers: getAuthHeader(),
+      withCredentials: true,
+    });
+  };
+  
