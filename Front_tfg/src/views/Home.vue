@@ -145,6 +145,9 @@
 import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer.vue';
 import { fetchServicios, fetchProductos } from '@/services/apiServices';
+import '@/assets/css/home-styles.css';
+
+
 
 export default {
   name: 'Home',

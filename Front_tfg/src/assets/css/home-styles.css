@@ -1,0 +1,145 @@
+/* Estilos generales */
+body {
+    background-color: #f5f8ff;
+    color: #01126C;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+  }
+  
+  h2 {
+    font-weight: 700;
+    color: #01126C;
+    margin-bottom: 2rem;
+  }
+  
+  /* Carruseles de servicios y productos */
+  .carousel-inner .carousel-item {
+    padding: 15px;
+  }
+  
+  .card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+  }
+  
+  .card-body {
+    padding: 25px;
+  }
+  
+  .card-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+  
+  .card-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #444;
+  }
+  
+  /* Botones */
+  button, .btn {
+    border-radius: 50px;
+    font-weight: 600;
+    padding: 10px 30px;
+    transition: all 0.3s ease;
+  }
+  
+  button:hover, .btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Botones principales */
+  .btn-outline-light {
+    background-color: #01126C;
+    color: #98E4FF;
+    border: 2px solid #98E4FF;
+  }
+  
+  .btn-outline-light:hover {
+    background-color: #98E4FF;
+    color: #01126C;
+    border-color: #01126C;
+  }
+  
+  /* Sobre nosotros */
+  .sobre-nosotros-card {
+    background: linear-gradient(135deg, #01126C, #01337C);
+    color: #fff;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .sobre-nosotros-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+  }
+  
+  .sobre-nosotros-btn {
+    background-color: #98E4FF;
+    color: #01126C;
+    font-weight: 600;
+  }
+  
+  .sobre-nosotros-btn:hover {
+    background-color: #86D6FF;
+    color: #01126C;
+  }
+  
+  /* Reseñas */
+  .card-text p {
+    font-style: italic;
+    color: #eef2ff;
+  }
+  
+  /* Carrusel de marcas */
+  .marcas-carousel {
+    overflow: hidden;
+    margin: 50px 0;
+  }
+  
+  .marcas-track {
+    display: flex;
+    gap: 20px;
+    animation: scroll 20s linear infinite;
+  }
+  
+  .marcas-track img {
+    height: 80px;
+    object-fit: contain;
+    border-radius: 12px;
+    transition: transform 0.3s;
+  }
+  
+  .marcas-track img:hover {
+    transform: scale(1.1);
+  }
+  
+  /* Animación scroll de marcas */
+  @keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  
+  /* Carruseles */
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    filter: invert(1);
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    h2 { font-size: 1.8rem; }
+    .card-title { font-size: 1.3rem; }
+    .card-text { font-size: 0.9rem; }
+    .btn, button { padding: 8px 25px; font-size: 0.9rem; }
+  }
+  
